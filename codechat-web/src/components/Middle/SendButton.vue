@@ -23,11 +23,5 @@ export default {
   color: red;
 }
 
-.btn-key {
-  background: #1abc9c;
-}
 
-.btn-key:hover {
-  background: #16a085;
-}
 </style>

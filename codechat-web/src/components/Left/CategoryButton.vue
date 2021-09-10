@@ -1,16 +1,18 @@
 <template>
-    <li>
         <a href="#chat_room.html">
             <i class="fa fa-rocket"></i>
-            <span>Marketing</span>
+            <span>{{ CategoryName }}</span>
         </a>
-    </li>
 </template>
 
 
 <script>
 export default {
     name:'CategoryButton',
+    props:
+    {
+        CategoryName: String
+    }
 }
 </script>
 

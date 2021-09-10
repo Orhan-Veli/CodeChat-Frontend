@@ -1,6 +1,9 @@
 <template>
+
     <ul class="chat-list">
-      <CategoryButton />
+      <li :key="category.id" v-for="category in categories">
+        <CategoryButton category="category.CategoryName" />
+      </li>
     </ul>
 </template>
 
@@ -10,6 +13,9 @@ export default {
     name:'ChatList',
     components:{
         CategoryButton
+    },
+    props:{
+       categories: Array
     }
 }
 </script>

@@ -12,7 +12,6 @@ export default {
 </script>
 
 <style scoped>
-
 .send-message {
   margin-top: 10px;
   width: 90%;
