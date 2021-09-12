@@ -1,9 +1,9 @@
 <template>
 
     <ul class="chat-list">
-      <li :key="category.id" v-for="category in categories">
-        <CategoryButton category="category.CategoryName" />
-      </li>
+      <li :key="category.id" v-for="category in categories">       
+        <CategoryButton :category="category" />
+      </li>      
     </ul>
 </template>
 
@@ -14,9 +14,31 @@ export default {
     components:{
         CategoryButton
     },
-    props:{
-       categories: Array
-    }
+    //props:["categories"],
+    data(){
+      return {
+        categories:undefined
+      }
+    },    
+       created(){
+        const requestOptions = {
+          method:"GET",
+          headers: {            
+            "Content-Type":"application/json",            
+            },     
+            mode:"cors"    
+        }     
+        const respanse = fetch("http://localhost:7000/api/category",requestOptions)
+        .then(response => response.json())
+        .then(data => (this.categories=data))
+        .catch((error)=> {
+          console.error('Error:',error)
+        });       
+       
+        console.log(respanse);  
+        console.log(this.list);      
+      },      
+      
 }
 </script>
 

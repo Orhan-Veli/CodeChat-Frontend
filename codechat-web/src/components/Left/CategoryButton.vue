@@ -1,7 +1,7 @@
 <template>
-        <a href="#chat_room.html">
-            <i class="fa fa-rocket"></i>
-            <span>{{ CategoryName }}</span>
+        <a type="button" @click="onclick()" href="#chat_room.html" >
+            <i class="fa fa-rocket"></i>            
+            <span>{{ category.name }}</span>
         </a>
 </template>
 
@@ -9,10 +9,12 @@
 <script>
 export default {
     name:'CategoryButton',
-    props:
-    {
-        CategoryName: String
-    }
+    props:["category"],   
+    methods:{
+      onclick: function() {
+        this.$emit('clicked',this.category.id);        
+      }  
+    } 
 }
 </script>
 

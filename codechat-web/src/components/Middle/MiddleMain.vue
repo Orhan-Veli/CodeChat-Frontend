@@ -1,23 +1,35 @@
-<template>
-       <aside class="tengah-side">
+<template>  
+       <aside class="tengah-side">        
             <div class="chat-room-head">
               <h3>Chat Room</h3>
             </div>
-            <div class="group-rom">
-              <div class="first-part">Cendy Andrianto</div>
-              <div class="second-part">Yoman Smith. Please proceed</div>
-              <div class="third-part">12:31</div>
-            </div>            
-            <ReplySection />
-          </aside>         
+             <div>          
+            <UserMessage />
+             </div>
+            <ReplySection />   
+          <div><CategoryButton :clicked="myclick($event)"/> </div>       
+        </aside>    
+           
 </template>
 
 <script>
 import ReplySection from './ReplySection.vue'
+import UserMessage from './UserMessage.vue'
+import CategoryButton from '../Left/CategoryButton.vue'
 export default {
     name:'MiddleMain',
     components:{
-        ReplySection
+        ReplySection,UserMessage,CategoryButton
+    },
+    data(){
+      return{
+        messages:undefined
+      }
+    },
+    methods: {
+      myclick(value){
+        console.log(value);
+      }
     }
 }
 </script>
@@ -47,35 +59,5 @@ export default {
   letter-spacing: 1px;
   display: inline-block;
 }
-.group-rom {
-  width: 100%;
-  float: left;
-  border-bottom: 1px solid #eaebee;
-}
 
-.group-rom .first-part,
-.group-rom .second-part,
-.group-rom .third-part {
-  float: left;
-  padding: 15px;
-}
-
-.group-rom .first-part {
-  width: 25%;
-}
-
-.group-rom .first-part.odd {
-  background: #f7f8fa;
-  color: #6a6a6a;
-  font-weight: 600;
-}
-
-.group-rom .second-part {
-  width: 60%;
-}
-
-.group-rom .third-part {
-  width: 15%;
-  color: #d4d3d3;
-}
 </style>

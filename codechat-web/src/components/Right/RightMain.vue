@@ -8,7 +8,9 @@
               <h4 class="pull-left">Online Coders</h4>
             </div>
             <ul class="chat-available-user">
-             <User />
+              <li>
+                 <User />
+              </li>            
             </ul>
           </aside>
 </template>
