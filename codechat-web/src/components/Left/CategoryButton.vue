@@ -1,20 +1,47 @@
 <template>
-        <a type="button" @click="onclick()" href="#chat_room.html" >
+  <ul class="chat-list">
+      <li :key="category.id" v-for="category in categories">    
+        <a type="button" @click="getMessages(category.id)" href="#chat_room.html" >
             <i class="fa fa-rocket"></i>            
             <span>{{ category.name }}</span>
         </a>
+      </li>
+  </ul>
 </template>
 
 
 <script>
 export default {
     name:'CategoryButton',
-    props:["category"],   
-    methods:{
-      onclick: function() {
-        this.$emit('clicked',this.category.id);        
-      }  
-    } 
+    props:["category"], 
+    data(){
+      return {
+        categories:Array      
+      }
+    },    
+    methods:{     
+     getMessages(val)
+     {
+       this.$emit('clicked',val);
+       console.log(val);
+     }, 
+    },
+    async created(){
+        const requestOptions = {
+          method:"GET",
+          headers: {            
+            "Content-Type":"application/json",            
+            },     
+            mode:"cors"    
+        }     
+     await fetch("http://localhost:7000/api/category",requestOptions)
+        .then(response => response.json())
+        .then(data => (this.categories=data))
+        .catch((error)=> {
+          console.error('Error:',error)
+        });  
+            console.log(this.categories);  
+      } 
 }
 </script>
 
@@ -26,5 +53,48 @@ export default {
 
 .btn-key:hover {
   background: #16a085;
+}
+ul.chat-list li a {
+  color: #6a6a6a;
+  display: block;
+  padding: 15px;
+  font-weight: 300;
+  text-decoration: none;
+}
+ul.chat-list li a:hover,
+ul.chat-list li.active a {
+  color: #00a9b4;
+  background: #f2f4f7;
+}
+
+ul.chat-list li h4 {
+  padding: 17px 15px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  border-bottom: 1px solid #d5d7de;
+}
+
+ul.chat-list li h4 i {
+  padding-right: 5px;
+}
+
+ul.chat-list li a span {
+  padding-left: 10px;
+}
+
+ul.chat-list li a i.fa-times {
+  color: #9fa3b0;
+}
+
+ul.chat-list li.active {
+  color: #00a9b4;
+  background: #f2f4f7;
+}
+
+ul.chat-list {
+  border-bottom: 1px solid #d5d7de;
+  padding-left: 0;
+  list-style: none;
 }
 </style>

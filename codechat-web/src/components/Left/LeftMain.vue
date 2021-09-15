@@ -5,17 +5,23 @@
               <i class="fa fa-comments-o"></i>
               <h3>Code Chat</h3>
             </div>
-            <ChatList />
+            <CategoryButton @clicked="sendCatId"/>
           </aside>
           <!-- end:aside kiri chat room -->    
 </template>
 
 <script>
-import ChatList from './ChatList.vue'
+import CategoryButton from './CategoryButton.vue'
 export default {
     name:'LeftMain',
     components : {
-      ChatList,
+      CategoryButton,
+    },
+    methods:{
+  sendCatId(val){
+        this.$emit('catId',val);
+        console.log(val);
+      }
     }
 }
 </script>

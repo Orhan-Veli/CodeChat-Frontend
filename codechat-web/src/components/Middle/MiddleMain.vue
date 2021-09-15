@@ -4,33 +4,21 @@
               <h3>Chat Room</h3>
             </div>
              <div>          
-            <UserMessage />
+            <UserMessage :messages="messages"/>
              </div>
-            <ReplySection />   
-          <div><CategoryButton :clicked="myclick($event)"/> </div>       
-        </aside>    
-           
+            <ReplySection />  
+        </aside> 
 </template>
 
 <script>
 import ReplySection from './ReplySection.vue'
 import UserMessage from './UserMessage.vue'
-import CategoryButton from '../Left/CategoryButton.vue'
 export default {
     name:'MiddleMain',
     components:{
-        ReplySection,UserMessage,CategoryButton
+        ReplySection,UserMessage
     },
-    data(){
-      return{
-        messages:undefined
-      }
-    },
-    methods: {
-      myclick(value){
-        console.log(value);
-      }
-    }
+    props:["messages"],
 }
 </script>
 

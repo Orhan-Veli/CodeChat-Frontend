@@ -1,15 +1,18 @@
 <template>
-    <div class="group-rom">
-            <div class="first-part">Cendy Andrianto</div>
-            <div class="second-part">Yoman Smith. Please proceed</div>
+<div :key="message.id" v-for="message in messages">
+ <div class="group-rom">
+            <div class="first-part">{{message.categoryName}}</div>
+            <div class="second-part">{{message.text}}</div>
             <div class="third-part">12:31</div>
     </div> 
+</div>
 </template>
 
 <script>
 export default{
-    name:"UserMessage",
-}
+    name:"UserMessage",   
+    props:["messages"]  
+  }
 </script>
 
 <style>

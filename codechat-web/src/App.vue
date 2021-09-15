@@ -6,10 +6,10 @@
       <div class="box">
         <div class="chat-room">
           <!-- start: Left -->
-         <LeftMain />
+         <LeftMain @catId="getAll"/>
            <!-- end: Left -->
           <!-- start:middle -->
-          <MiddleMain />
+          <MiddleMain :messages="messages"/>
           <!-- end: middle -->
 
           <!-- start:rigt -->
@@ -35,7 +35,35 @@ export default {
     MiddleMain,
     RightMain
   },
+  data(){
+    return{
+      messages:undefined
+    }
+  },
+  methods:{
+async getAll(val){
+    console.log(val);
+    if(val === undefined){return;}
+ const requestOptions = {
+                  method:"GET",
+                  headers: {            
+                    "Content-Type":"application/json",            
+                    },     
+                    mode:"cors"    
+                }     
+               await fetch(`http://localhost:7002/api/message/getall/${val}`,requestOptions)
+                .then(response => response.json())
+                .then(data => (this.messages=data))
+                .catch((error)=> {
+                  console.error('Error:',error)
+                });
+                console.log(this.messages);
 }
+  }
+  
+}
+
+
 </script>
 
 <style>
