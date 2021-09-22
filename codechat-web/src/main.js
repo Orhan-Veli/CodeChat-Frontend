@@ -1,25 +1,25 @@
 import { createApp } from 'vue'
-//import { createStore } from "vuex";
+import { createStore } from "vuex";
 import App from './App.vue'
 
-// const store = createStore({
-//     state(){
-//         return{
-//             id:String, 
-//             messages:undefined           
-//         }
-//     },
-//     mutations:{
-//         setMessages(state, payload){
-//              state.messages = payload;
-//          },        
-//     },
-//     getters:{      
-//         getMessages: (state) => state.messages  
-//     }
-// })
+const store = createStore({
+    state(){
+        return{
+            id:String,
+            name:String,            
+        }        
+    },
+    mutations:{
+        setId(state,payload)
+        {         
+            console.log(payload)
+            state.id=payload.id; 
+            state.name=payload.name;          
+        }
+    }
+})
 
 const app = createApp(App);
 
-//app.use(store);
+app.use(store);
 app.mount('#app');

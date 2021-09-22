@@ -1,28 +1,34 @@
-<template>  
-       <aside class="tengah-side">        
-            <div class="chat-room-head">
-              <h3>Chat Room</h3>
-            </div>
-             <div>          
-            <UserMessage :messages="messages"/>
-             </div>
-            <ReplySection />  
-        </aside> 
+<template>
+  <aside class="tengah-side">
+    <div class="chat-room-head">
+      <h3>Chat Room</h3>
+    </div>
+    <div class="scroll">
+      <UserMessage :messages="messages" />
+    </div>
+    <ReplySection />
+  </aside>
 </template>
 
 <script>
-import ReplySection from './ReplySection.vue'
-import UserMessage from './UserMessage.vue'
+import ReplySection from "./ReplySection.vue";
+import UserMessage from "./UserMessage.vue";
 export default {
-    name:'MiddleMain',
-    components:{
-        ReplySection,UserMessage
-    },
-    props:["messages"],
-}
+  name: "MiddleMain",
+  components: {
+    ReplySection,
+    UserMessage,
+  },
+  props: ["messages"],
+};
 </script>
 
 <style scoped>
+.scroll {
+  height: 780px;
+  overflow: scroll;
+  width: 100%;
+}
 .chat-room .tengah-side {
   width: 100%;
   height: 100%;
@@ -47,5 +53,4 @@ export default {
   letter-spacing: 1px;
   display: inline-block;
 }
-
 </style>

@@ -1,73 +1,37 @@
 <template>
-<div :key="message.id" v-for="message in messages">
- <div class="group-rom">
-            <div class="first-part">{{message.categoryName}}</div>
-            <div class="second-part">{{message.text}}</div>
-            <div class="third-part">{{fun(message.createdOn)}}</div>
-    </div> 
-</div>
-<div :key="user.id" v-for="user in userMessage">
-  <div class="group-rom" >
-            <div class="first-part">{{user.categoryName}}</div>
-            <div class="second-part">{{user.text}}</div>
-            <div class="third-part">{{fun(user.createdOn)}}</div>
-    </div> 
-</div>
-
+  <div :key="message.id" v-for="message in messages">
+    <div class="group-rom">
+      <div class="first-part">{{ message.categoryName }}</div>
+      <div class="second-part">{{ message.text }}</div>
+      <div class="third-part">{{ fun(message.createdOn) }}</div>
+    </div>
+  </div>
 </template>
 
 <script>
-import moment from 'moment'
-import * as signalR from "@microsoft/signalr"
+import moment from "moment";
 
-export default{
-    name:"UserMessage",   
-    props:["messages"],
-    data(){       
-      return {
-          dates:Date,
-          userMessages:[],
-          userMessage:{},
-          connectionId:undefined,
-          connection:undefined          
+export default {
+  name: "UserMessage",
+  props: ["messages"],
+  data() {
+    return {
+      dates: Date,
+    };
+  },
+
+  methods: {
+    fun(val) {
+      if (val !== undefined) {
+        this.dates = moment(val).format("DD.MM.yyyy hh:mm");
+        return this.dates;
       }
     },
-    async created(){
-      const hubConnection = new signalR.HubConnectionBuilder().configureLogging(signalR.LogLevel.Debug).withUrl("http://localhost:7002/ChatHub",{
-        skipNegotiation:true,
-        transport:signalR.HttpTransportType.WebSockets
-      }).build();
-      await hubConnection.start();
-      this.connectionId=hubConnection.connectionId;
-      this.connection = hubConnection;
-      await this.connection.on("ReceiveMessage",(val) =>{
-        val = JSON.parse(val);
-    this.userMessage={
-      "id":val.Id,
-      "text":val.Text,
-      "categoryName":val.CategoryName,
-      "createdOn":val.CreatedOn
-    }       
-        this.userMessages.push(this.userMessage);
-        console.log(this.userMessages);  
-      })
-      
-    }, 
-    methods:{
-       fun(val){
-      if(val !== undefined){      
-        this.dates = moment(val).format('DD.MM.yyyy hh:mm');
-        return this.dates;
-        }  
-      },
-      
-    }
-  }
+  },
+};
 </script>
 
 <style>
-
-
 .group-rom {
   width: 100%;
   float: left;

@@ -1,22 +1,19 @@
 <template>
-    <footer>
-              <div class="chat-txt">
-               <Message />
-              </div>
-              <SendButton />
-        </footer>
+  <footer>
+    <div class="chat-txt">
+      <SendButton />
+    </div>
+  </footer>
 </template>
 
 <script>
-import Message from './Message.vue'
-import SendButton from './SendButton.vue'
+import SendButton from "./SendButton.vue";
 export default {
-    name:'ReplySection',
-    components:{
-        SendButton,
-        Message
-    }
-}
+  name: "ReplySection",
+  components: {
+    SendButton,
+  },
+};
 </script>
 
 <style scoped>
@@ -25,5 +22,4 @@ export default {
   width: 100%;
   position: relative;
 }
-
 </style>

@@ -1,69 +1,119 @@
 <template>
-<div class="container bootstrap snippets bootdey.com">
-  <div class="row">
-    <div class="col-md-12">
-      <!-- start:chat room -->
-      <div class="box">
-        <div class="chat-room">
-          <!-- start: Left -->
-         <LeftMain @catId="getAll"/>
-           <!-- end: Left -->
-          <!-- start:middle -->
-          <MiddleMain :messages="messages"/>
-          <!-- end: middle -->
+  <div class="container bootstrap snippets bootdey.com">
+    <div class="row">
+      <div class="col-md-12">
+        <!-- start:chat room -->
+        <div class="box">
+          <div class="chat-room">
+            <!-- start: Left -->
+            <LeftMain @catId="getAll" />
+            <!-- end: Left -->
+            <!-- start:middle -->
+            <MiddleMain :messages="messages" />
+            <!-- end: middle -->
 
-          <!-- start:rigt -->
-          <RightMain />
-          <!-- end:right-->
+            <!-- start:rigt -->
+            <RightMain />
+            <!-- end:right-->
+          </div>
         </div>
+        <!-- end:chat room -->
       </div>
-      <!-- end:chat room -->
     </div>
   </div>
-</div>
-
 </template>
 
 <script>
-import LeftMain from './components/Left/LeftMain.vue'
-import MiddleMain from './components/Middle/MiddleMain.vue'
-import RightMain from './components/Right/RightMain.vue'
+import * as signalR from "@microsoft/signalr";
+import LeftMain from "./components/Left/LeftMain.vue";
+import MiddleMain from "./components/Middle/MiddleMain.vue";
+import RightMain from "./components/Right/RightMain.vue";
 export default {
-  name: 'App',
+  name: "App",
   components: {
     LeftMain,
     MiddleMain,
-    RightMain
+    RightMain,
   },
-  data(){
-    return{
-      messages:undefined
-    }
+  data() {
+    return {
+      messages: undefined,
+      connectionId: undefined,
+      userMessage: {},
+      connection: undefined,
+    };
   },
-  methods:{
-async getAll(val){
-    console.log(val);
-    if(val === undefined){return;}
- const requestOptions = {
-                  method:"GET",
-                  headers: {            
-                    "Content-Type":"application/json",            
-                    },     
-                    mode:"cors"    
-                }     
-               await fetch(`http://localhost:7002/api/message/getall/${val}`,requestOptions)
-                .then(response => response.json())
-                .then(data => (this.messages=data))
-                .catch((error)=> {
-                  console.error('Error:',error)
-                });
-                console.log(this.messages);
-}
-  }
-  
-}
-
-
+  methods: {
+    async getAll(val) {
+      if (val === undefined) {
+        return;
+      }
+      const requestOptions = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        mode: "cors",
+      };
+      await fetch(
+        `http://localhost:7002/api/message/getall/${val}`,
+        requestOptions
+      )
+        .then((response) => response.json())
+        .then(
+          (data) =>
+            function () {
+              if (data !== null && data !== undefined) {
+                this.messages = data;
+              }
+            }
+        )
+        .catch((error) => {
+          this.messages = [];
+          console.error("Error:", error);
+        });
+      if (
+        this.messages == null ||
+        this.messages == "" ||
+        this.messages == undefined
+      ) {
+        this.messages = [];
+      }
+      await this.signalRSocket(val);
+      console.log(this.messages);
+    },
+    async signalRSocket(categoryId) {
+      if (categoryId === undefined) {
+        return;
+      }
+      if (this.connection !== undefined) {
+        console.log("con stop");
+        await this.connection.stop();
+      }
+      const hubConnection = new signalR.HubConnectionBuilder()
+        .configureLogging(signalR.LogLevel.Debug)
+        .withUrl("http://localhost:7002/ChatHub", {
+          skipNegotiation: true,
+          transport: signalR.HttpTransportType.WebSockets,
+        })
+        .build();
+      await hubConnection.start();
+      this.connectionId = hubConnection.connectionId;
+      this.connection = hubConnection;
+      await this.connection.on(categoryId, (val) => {
+        val = JSON.parse(val);
+        this.userMessage = {
+          id: val.Id,
+          text: val.Text,
+          categoryName: val.CategoryName,
+          createdOn: val.CreatedOn,
+        };
+        this.messages.push(this.userMessage);
+        console.log(this.userMessages);
+      });
+    },
+  },
+};
 </script>
 
 <style>
@@ -100,7 +150,6 @@ body {
   color: red;
 }
 
-
 .chat-room .user-head i {
   float: left;
   font-size: 40px;
@@ -119,8 +168,6 @@ body {
   min-height: 70px;
   padding: 15px;
 }
-
-
 
 ul.chat-user {
   margin-bottom: 200px;
@@ -215,8 +262,6 @@ ul.chat-available-user li i {
   font-size: 10px;
 }
 
-
-
 a.guest-on {
   color: #6a6a6a;
   margin-top: 8px;
@@ -232,9 +277,7 @@ a.guest-on i {
   margin-right: 5px;
 }
 
-
 .lobby {
   padding: 0 !important;
 }
-
 </style>

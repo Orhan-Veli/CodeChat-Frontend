@@ -1,48 +1,62 @@
 <template>
   <ul class="chat-list">
-      <li :key="category.id" v-for="category in categories">    
-        <a type="button" @click="getMessages(category.id)" href="#chat_room.html" >
-            <i class="fa fa-rocket"></i>            
-            <span>{{ category.name }}</span>
-        </a>
-      </li>
+    <li :key="category.id" v-for="category in categories">
+      <a
+        type="button"
+        @click="
+          getMessage(category.id);
+          setId(category.id, category.name);
+        "
+        href="#chat_room.html"
+      >
+        <i class="fa fa-rocket"></i>
+        <span>{{ category.name }}</span>
+      </a>
+    </li>
   </ul>
 </template>
 
 
 <script>
+import { mapMutations } from "vuex";
 export default {
-    name:'CategoryButton',
-    props:["category"], 
-    data(){
-      return {
-        categories:Array      
-      }
-    },    
-    methods:{     
-     getMessages(val)
-     {
-       this.$emit('clicked',val);
-       console.log(val);
-     }, 
+  name: "CategoryButton",
+  props: ["category"],
+  data() {
+    return {
+      categories: Array,
+    };
+  },
+  methods: {
+    ...mapMutations(["setId"]),
+    setId(a, b) {
+      this.$store.commit("setId", {
+        id: a,
+        name: b,
+      });
     },
-    async created(){
-        const requestOptions = {
-          method:"GET",
-          headers: {            
-            "Content-Type":"application/json",            
-            },     
-            mode:"cors"    
-        }     
-     await fetch("http://localhost:7000/api/category",requestOptions)
-        .then(response => response.json())
-        .then(data => (this.categories=data))
-        .catch((error)=> {
-          console.error('Error:',error)
-        });  
-            console.log(this.categories);  
-      } 
-}
+    getMessage(val) {
+      this.$emit("clicked", val);
+      console.log(val);
+    },
+  },
+  async created() {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: "cors",
+    };
+    await fetch("http://localhost:7000/api/category", requestOptions)
+      .then((response) => response.json())
+      .then((data) => (this.categories = data))
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    console.log(this.categories);
+  },
+};
 </script>
 
 
