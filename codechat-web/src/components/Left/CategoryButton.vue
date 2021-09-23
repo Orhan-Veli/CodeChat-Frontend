@@ -29,10 +29,10 @@ export default {
   },
   methods: {
     ...mapMutations(["setId"]),
-    setId(a, b) {
+    setId(Id, Name) {
       this.$store.commit("setId", {
-        id: a,
-        name: b,
+        id: Id,
+        name: Name,
       });
     },
     getMessage(val) {
@@ -68,6 +68,7 @@ export default {
 .btn-key:hover {
   background: #16a085;
 }
+
 ul.chat-list li a {
   color: #6a6a6a;
   display: block;
@@ -79,6 +80,10 @@ ul.chat-list li a:hover,
 ul.chat-list li.active a {
   color: #00a9b4;
   background: #f2f4f7;
+}
+
+ul.chat-list li a:focus {
+  background: rgb(108, 243, 209);
 }
 
 ul.chat-list li h4 {

@@ -6,7 +6,7 @@ const store = createStore({
     state(){
         return{
             id:String,
-            name:String,            
+            name:"",            
         }        
     },
     mutations:{

@@ -60,14 +60,7 @@ export default {
         requestOptions
       )
         .then((response) => response.json())
-        .then(
-          (data) =>
-            function () {
-              if (data !== null && data !== undefined) {
-                this.messages = data;
-              }
-            }
-        )
+        .then((data) => (data ? (this.messages = data) : (this.messages = [])))
         .catch((error) => {
           this.messages = [];
           console.error("Error:", error);

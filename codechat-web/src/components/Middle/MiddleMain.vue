@@ -1,7 +1,7 @@
 <template>
   <aside class="tengah-side">
     <div class="chat-room-head">
-      <h3>Chat Room</h3>
+      <h3>Chat Room {{ this.$store.state.name }}</h3>
     </div>
     <div class="scroll">
       <UserMessage :messages="messages" />
@@ -15,6 +15,11 @@ import ReplySection from "./ReplySection.vue";
 import UserMessage from "./UserMessage.vue";
 export default {
   name: "MiddleMain",
+  data() {
+    return {
+      title: String,
+    };
+  },
   components: {
     ReplySection,
     UserMessage,

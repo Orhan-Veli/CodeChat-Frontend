@@ -1,5 +1,6 @@
 <template>
   <textarea
+    @keyup.enter="sendParam"
     v-model="messageText"
     ref="messageText"
     class="form-control send-message"
