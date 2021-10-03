@@ -13,7 +13,7 @@
             <!-- end: middle -->
 
             <!-- start:rigt -->
-            <RightMain />
+            <RightMain :users="users" />
             <!-- end:right-->
           </div>
         </div>
@@ -38,6 +38,7 @@ export default {
   data() {
     return {
       messages: undefined,
+      users:undefined,
       connectionId: undefined,
       userMessage: {},
       connection: undefined,
@@ -79,6 +80,8 @@ export default {
       return null;
     },
     async getAll(val) {
+      this.users = [];
+      this.messages = [];
       if (val === undefined) {
         return;
       }
@@ -94,18 +97,21 @@ export default {
         requestOptions
       )
         .then((response) => response.json())
-        .then((data) => (data ? (this.messages = data) : (this.messages = [])))
+        .then((data) => 
+        {
+          if(data)
+          {
+            this.messages = data;
+            const userNames = [...new Set(this.messages.reduce((a,c) => [...a,c.userName],[]))];
+            userNames.forEach(element => {
+              this.users.push(element);
+            });         
+          }         
+        })
         .catch((error) => {
           this.messages = [];
           console.error("Error:", error);
-        });
-      if (
-        this.messages == null ||
-        this.messages == "" ||
-        this.messages == undefined
-      ) {
-        this.messages = [];
-      }
+        });      
       await this.signalRSocket(val);
       console.log(this.messages);
     },

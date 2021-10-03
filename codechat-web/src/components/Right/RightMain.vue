@@ -8,8 +8,8 @@
               <h4 class="pull-left">Online Coders</h4>
             </div>
             <ul class="chat-available-user">
-              <li>
-                 <User />
+              <li :key="user" v-for="user in users">
+                 <User :userName="user" />
               </li>            
             </ul>
           </aside>
@@ -23,7 +23,8 @@ export default {
     name:'RightMain',
     components:{
         User,Option,Donate
-    }
+    },
+    props:["users"]
 }
 </script>
 
