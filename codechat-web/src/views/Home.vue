@@ -132,6 +132,8 @@ export default {
         this.userMessage = {
           id: val.Id,
           text: val.Text,
+          userId:val.UserId,
+          userName:val.UserName,
           categoryName: val.CategoryName,
           createdOn: val.CreatedOn,
         };

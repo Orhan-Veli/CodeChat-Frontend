@@ -1,7 +1,7 @@
 <template>
-  <div :key="message.id" v-for="message in messages">
+  <div :key="message.userId" v-for="message in messages">
     <div class="group-rom">
-      <div class="first-part">{{ message.categoryName }}</div>
+      <div class="first-part">{{ message.userName }}</div>
       <div class="second-part">{{ message.text }}</div>
       <div class="third-part">{{ fun(message.createdOn) }}</div>
     </div>
