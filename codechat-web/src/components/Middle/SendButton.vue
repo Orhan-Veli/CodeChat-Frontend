@@ -58,13 +58,12 @@ export default {
       return null;
     },
   },
-
 };
 </script>
 
 <style scoped>
 .sendButton {
-  margin-top: 1%;
+  margin-bottom: -4%;
   margin-left: 92%;
   position: absolute;
   bottom: 30%;
