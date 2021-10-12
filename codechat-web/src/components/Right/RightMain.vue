@@ -8,8 +8,8 @@
               <h4 class="pull-left">Online Coders</h4>
             </div>
             <ul class="chat-available-user">
-              <li :key="user" v-for="user in users">
-                 <User :userName="user" />
+              <li :key="user.id" v-for="user in users">
+                 <User :userName="user.userName" />
               </li>            
             </ul>
           </aside>

@@ -13,7 +13,7 @@
             <!-- end: middle -->
 
             <!-- start:rigt -->
-            <RightMain :users="users" />
+            <RightMain :users="onlineUsers" />
             <!-- end:right-->
           </div>
         </div>
@@ -38,10 +38,10 @@ export default {
   data() {
     return {
       messages: undefined,
-      users:undefined,
       connectionId: undefined,
       userMessage: {},
       connection: undefined,
+      onlineUsers:undefined, 
     };
   },
   methods: {
@@ -79,8 +79,7 @@ export default {
       }
       return null;
     },
-    async getAll(val) {
-      this.users = [];
+    async getAll(val) {    
       this.messages = [];
       if (val === undefined) {
         return;
@@ -101,11 +100,8 @@ export default {
         {
           if(data)
           {
-            this.messages = data;
-            const userNames = [...new Set(this.messages.reduce((a,c) => [...a,c.userName],[]))];
-            userNames.forEach(element => {
-              this.users.push(element);
-            });         
+            this.messages = data; 
+            console.log(this.messages);                
           }         
         })
         .catch((error) => {
@@ -113,16 +109,16 @@ export default {
           console.error("Error:", error);
         });      
       await this.signalRSocket(val);
-      console.log(this.messages);
+      console.log(val);
     },
-    async signalRSocket(categoryId) {
+    async signalRSocket(categoryId) {       
       if (categoryId === undefined) {
         return;
       }
       if (this.connection !== undefined) {
         console.log("con stop");
         await this.connection.stop();
-      }
+      }      
       const hubConnection = new signalR.HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
         .withUrl("http://localhost:7002/ChatHub", {
@@ -132,25 +128,40 @@ export default {
         .build();
       await hubConnection.start();
       this.connectionId = hubConnection.connectionId;
-      this.connection = hubConnection;
-      await this.connection.on(categoryId, (val) => {
-        val = JSON.parse(val);
-        this.userMessage = {
-          id: val.Id,
-          text: val.Text,
-          userId:val.UserId,
-          userName:val.UserName,
-          categoryName: val.CategoryName,
-          createdOn: val.CreatedOn,
-        };
+      this.connection = hubConnection;      
+      await this.connection.on(categoryId, (all) => {
+        
+        all = JSON.parse(JSON.stringify(all));
+        console.log(all);
+         console.log(all.onlineUserModels);
+         console.log(all.messageModels); 
+         this.userMessage = {
+           id: all.messageModels.id,
+           text: all.messageModels.text,
+           userId:all.messageModels.userId,
+           userName:all.messageModels.userName,
+           categoryName: all.messageModels.categoryName,
+           createdOn: all.messageModels.createdOn,
+          };
+          this.onlineUsers = [];
+          all.onlineUserModels.forEach(element => {
+            const users =
+            {
+              id:element.id,
+              userName:element.userName
+            }
+            this.onlineUsers.push(users);
+          });
         this.messages.push(this.userMessage);
         console.log(this.userMessages);
       });
+      this.connection.client.online = function() {}
     },
+    
   },
  beforeMount() {
-    this.CheckUser();
-  },
+    this.CheckUser();    
+  }, 
 };
 </script>
 
