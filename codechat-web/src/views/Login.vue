@@ -83,6 +83,7 @@
 <script>
 import * as external from "@/assets/external.js";
 import VCookies from "vue-cookies";
+//import toastr from "vue-toastr";
 export default {
   name: "Login",
   data() {
@@ -135,13 +136,35 @@ export default {
         }),
         mode: "cors",
       };
-      await fetch("http://localhost:7001/api/User/Login", requestOptions)
-        .then((response) => response.text())
+      await fetch("http://localhost:7001/api/User/Login", requestOptions)        
         .then((response) => {
-          VCookies.set("CodeChatCookie", response, "3h", "/");
-          this.$router.push("/Home");
+          if(response.status == 200)
+          {
+            VCookies.set("CodeChatCookie", response, "3h", "/");
+            this.$router.push("/Home");
+          }
+          else
+          {
+            // var authToastr = toastr.Add({
+            //   name:"AuthToastr",
+            //   title:"Stop tryin!",
+            //   msg:"Username Or Password is not correct.",
+            //   clickClose:true,
+            //   position:"toast-top-full-width",
+            //   type:"error",
+            // });            
+            this.$toast.warning("Username or password is not correct.",{
+              position:"top-right",
+              duration:1000,
+              dismissible:true,              
+            });
+            //setTimeout(this.$toast.clear,3000);
+          }          
         })
-        .catch((error) => console.log(error));
+        .catch((error) => {
+          console.log(error);
+        }
+      )
     },
   },
   beforeMount()

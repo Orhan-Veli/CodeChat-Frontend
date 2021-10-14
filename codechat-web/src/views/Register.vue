@@ -123,6 +123,14 @@ export default {
           if (response.ok) {
             this.$router.push("/");
           }
+          else
+          {
+             this.$toast.warning("Username or email is already taken.",{
+              position:"top-right",
+              duration:1000,
+              dismissible:true,              
+            });
+          }
         })
         .catch((error) => console.log("error: ", error));
     },
