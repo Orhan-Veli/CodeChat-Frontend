@@ -25,6 +25,15 @@ export default {
   },
   methods: {
     async sendParam() {
+      if(this.messageText == null || this.messageText == "" || this.messageText == undefined)
+      {
+         this.$toast.warning("Please write reply",{
+              position:"top-left",
+              duration:1000,
+              dismissible:true,              
+            });
+        return;
+      }
       let cookie = this.getCookie("CodeChatCookie");
       const requestOptions = {
         method: "POST",

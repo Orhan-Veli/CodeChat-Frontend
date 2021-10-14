@@ -129,42 +129,33 @@ export default {
     async LoginUser() {
       const requestOptions = {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",'Accept': 'application/json' },
         body: JSON.stringify({
           Email: this.Emailaddress,
           Password: this.Password,
         }),
         mode: "cors",
       };
-      await fetch("http://localhost:7001/api/User/Login", requestOptions)        
-        .then((response) => {
+       await fetch("http://localhost:7001/api/User/Login", requestOptions).then(async (response) => {
           if(response.status == 200)
           {
-            VCookies.set("CodeChatCookie", response, "3h", "/");
+            let data = await response.json();
+            console.log(data);
+            VCookies.set("CodeChatCookie", data, "3h", "/");
             this.$router.push("/Home");
           }
           else
-          {
-            // var authToastr = toastr.Add({
-            //   name:"AuthToastr",
-            //   title:"Stop tryin!",
-            //   msg:"Username Or Password is not correct.",
-            //   clickClose:true,
-            //   position:"toast-top-full-width",
-            //   type:"error",
-            // });            
+          {                   
             this.$toast.warning("Username or password is not correct.",{
               position:"top-right",
               duration:1000,
               dismissible:true,              
             });
-            //setTimeout(this.$toast.clear,3000);
-          }          
-        })
-        .catch((error) => {
-          console.log(error);
-        }
-      )
+          } 
+       });
+       
+       
+               
     },
   },
   beforeMount()
