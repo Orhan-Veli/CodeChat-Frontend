@@ -100,7 +100,7 @@ export default {
         {
           if(data)
           {
-            this.messages = data; 
+            this.messages = data.data; 
             console.log(this.messages);                
           }         
         })
@@ -115,10 +115,10 @@ export default {
       if (categoryId === undefined) {
         return;
       }
-      if (this.connection !== undefined) {
-        console.log("con stop");
-        await this.connection.stop();
-      }      
+      // if (this.connection !== undefined) {
+      //   console.log("con stop");
+      //   await this.connection.stop();
+      // }      
       const hubConnection = new signalR.HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
         .withUrl("http://localhost:7002/ChatHub", {
@@ -126,36 +126,26 @@ export default {
           transport: signalR.HttpTransportType.WebSockets,
         })
         .build();
-      await hubConnection.start();
+      hubConnection.start();
       this.connectionId = hubConnection.connectionId;
-      this.connection = hubConnection;      
-      await this.connection.on(categoryId, (all) => {
-        
-        all = JSON.parse(JSON.stringify(all));
+      this.connection = hubConnection; 
+      hubConnection.on("UserConnected",(users) => console.log(users));  
+      hubConnection.on(categoryId, (all) => {
+        all = JSON.parse(all);
         console.log(all);
          console.log(all.onlineUserModels);
          console.log(all.messageModels); 
          this.userMessage = {
-           id: all.messageModels.id,
-           text: all.messageModels.text,
-           userId:all.messageModels.userId,
-           userName:all.messageModels.userName,
-           categoryName: all.messageModels.categoryName,
-           createdOn: all.messageModels.createdOn,
-          };
-          this.onlineUsers = [];
-          all.onlineUserModels.forEach(element => {
-            const users =
-            {
-              id:element.id,
-              userName:element.userName
-            }
-            this.onlineUsers.push(users);
-          });
+           id: all.Id,
+           text: all.Text,
+           userId:all.UserId,
+           userName:all.UserName,
+           categoryName: all.CategoryName,
+           createdOn: all.CreatedOn,
+          };          
         this.messages.push(this.userMessage);
         console.log(this.userMessages);
       });
-      this.connection.client.online = function() {}
     },
     
   },

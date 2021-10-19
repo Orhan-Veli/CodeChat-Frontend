@@ -50,7 +50,7 @@ export default {
     };
     await fetch("http://localhost:7000/api/category", requestOptions)
       .then((response) => response.json())
-      .then((data) => (this.categories = data))
+      .then((data) => (this.categories = data.data))
       .catch((error) => {
         console.error("Error:", error);
       });
