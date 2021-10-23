@@ -1,24 +1,16 @@
 <template>
   <ul class="chat-list">
     <li :key="category.id" v-for="category in categories">
-      <a
-        type="button"
-        @click="
-          getMessage(category.id);
-          setId(category.id, category.name);
-        "
-        href="#chat_room.html"
-      >
-        <i class="fa fa-rocket"></i>
+<a type="button" @click="routeCategory(category.id,category.name)" href="">
+<i class="fa fa-rocket"></i>
         <span>{{ category.name }}</span>
-      </a>
+</a>
     </li>
   </ul>
 </template>
 
 
 <script>
-import { mapMutations } from "vuex";
 export default {
   name: "CategoryButton",
   props: ["category"],
@@ -28,17 +20,13 @@ export default {
     };
   },
   methods: {
-    ...mapMutations(["setId"]),
-    setId(Id, Name) {
-      this.$store.commit("setId", {
-        id: Id,
-        name: Name,
-      });
-    },
-    getMessage(val) {
-      this.$emit("clicked", val);
-      console.log(val);
-    },
+    routeCategory(categoryId,categoryName)
+    {
+      if(categoryId != undefined || categoryId != '' || categoryId != null)
+      {
+        this.$router.push({name:"Home",params:{categoryId:categoryId,categoryName:categoryName}})
+      }
+    }
   },
   async created() {
     const requestOptions = {

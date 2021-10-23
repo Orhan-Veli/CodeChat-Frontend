@@ -12,17 +12,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 export default {
   name: "SendButton",
-  data() {
-    return {
-      postId: undefined,
-    };
-  },
-  computed: {
-    ...mapState(["id", "name"]),
-  },
   methods: {
     async sendParam() {
       if(this.messageText == null || this.messageText == "" || this.messageText == undefined)
@@ -34,6 +25,9 @@ export default {
             });
         return;
       }
+      console.log(this.messageText);
+      console.log(this.$route.params.categoryId);
+      console.log(this.$route.params.categoryName);
       let cookie = this.getCookie("CodeChatCookie");
       const requestOptions = {
         method: "POST",
@@ -43,14 +37,13 @@ export default {
           },
         body: JSON.stringify({
           Text: this.messageText,
-          CategoryId: this.id,
-          CategoryName: this.name,
+          CategoryId: this.$route.params.categoryId,
+          CategoryName: this.$route.params.categoryName,
         }),
         mode: "cors",
       };
       await fetch("http://localhost:7002/api/message", requestOptions)
-        .then((response) => response.json())
-        .then((data) => (this.postId = data))
+        .then((response) => console.log(response))
         .catch((error) => console.log(error));
       this.$refs["messageText"].value = "";
     },

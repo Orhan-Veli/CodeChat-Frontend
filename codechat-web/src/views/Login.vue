@@ -83,7 +83,6 @@
 <script>
 import * as external from "@/assets/external.js";
 import VCookies from "vue-cookies";
-//import toastr from "vue-toastr";
 export default {
   name: "Login",
   data() {
@@ -109,7 +108,7 @@ export default {
           "http://localhost:7001/api/user/CheckUser",
           requestOptions
         )
-          .then((res) => {if(res.ok){ this.$router.push("/Home")}})
+          .then((res) => {if(res.ok){ this.$router.push({name:"Home",params:{categoryId:'48b04268-ce54-4ca4-9446-ce367b58be9f',categoryName:'orhan'}})}})
           .catch((error) => console.log(error));
       } 
     },
@@ -142,7 +141,7 @@ export default {
             let data = await response.json();
             console.log(data);
             VCookies.set("CodeChatCookie", data, "3h", "/");
-            this.$router.push("/Home");
+            this.$router.push({name:"Home",params:{categoryId:'48b04268-ce54-4ca4-9446-ce367b58be9f',categoryName:'orhan'}});
           }
           else
           {                   

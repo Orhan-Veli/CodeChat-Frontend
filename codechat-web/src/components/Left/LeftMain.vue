@@ -5,7 +5,7 @@
               <i class="fa fa-comments-o"></i>
               <h3>Code Chat</h3>
             </div>
-            <CategoryButton @clicked="sendCatId"/>
+            <CategoryButton />
           </aside>
           <!-- end:aside kiri chat room -->    
 </template>
@@ -17,12 +17,6 @@ export default {
     components : {
       CategoryButton,
     },
-    methods:{
-  sendCatId(val){
-        this.$emit('catId',val);
-        console.log(val);
-      }
-    }
 }
 </script>
 

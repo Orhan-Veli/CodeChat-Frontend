@@ -6,7 +6,8 @@
         <div class="box">
           <div class="chat-room">
             <!-- start: Left -->
-            <LeftMain @catId="getAll" />
+            <!-- <LeftMain @catId="getAll" /> -->
+            <LeftMain/>
             <!-- end: Left -->
             <!-- start:middle -->
             <MiddleMain :messages="messages" />
@@ -24,6 +25,8 @@
 </template>
 
 <script>
+// import {mapMutations} from "vuex";
+// import {mapState} from "vuex";
 import * as signalR from "@microsoft/signalr";
 import LeftMain from "../components/Left/LeftMain.vue";
 import MiddleMain from "../components/Middle/MiddleMain.vue";
@@ -40,12 +43,17 @@ export default {
       messages: undefined,
       connectionId: undefined,
       userMessage: {},
-      connection: undefined,
-      onlineUsers:undefined, 
+      connectionMessage: undefined,
+      connectionUser:undefined,
+      onlineUsers:[], 
     };
   },
+  // computed:{
+  //   ...mapState(["onlineUsers"])
+  // },
   methods: {
-     async CheckUser() {
+    //...mapMutations(["OnlineUser","OfflineUser"]),
+     async CheckUser(catId,catName) {
       let cookie = this.getCookie("CodeChatCookie");
       console.log(cookie);
       if (cookie !== null) {
@@ -61,7 +69,7 @@ export default {
           "http://localhost:7001/api/user/CheckUser",
           requestOptions
         )
-          .then((res) => res.ok ? this.$router.push("/Home") : this.$router.push("/"))
+          .then((res) => res.ok ? this.$router.push({name:"Home",params:{categoryId:catId,categoryName:catName}}) : this.$router.push("/"))
           .catch((error) => console.log(error));
       } else {
         this.$router.push("/");        
@@ -79,7 +87,8 @@ export default {
       }
       return null;
     },
-    async getAll(val) {    
+    async getAll(val) {  
+      this.CheckUser(val);  
       this.messages = [];
       if (val === undefined) {
         return;
@@ -107,7 +116,8 @@ export default {
         .catch((error) => {
           this.messages = [];
           console.error("Error:", error);
-        });      
+        });    
+       
       await this.signalRSocket(val);
       console.log(val);
     },
@@ -115,10 +125,10 @@ export default {
       if (categoryId === undefined) {
         return;
       }
-      // if (this.connection !== undefined) {
-      //   console.log("con stop");
-      //   await this.connection.stop();
-      // }      
+      if (this.connection !== undefined) {
+        console.log("con stop");
+        await this.connection.stop();
+      }      
       const hubConnection = new signalR.HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
         .withUrl("http://localhost:7002/ChatHub", {
@@ -127,14 +137,10 @@ export default {
         })
         .build();
       hubConnection.start();
-      this.connectionId = hubConnection.connectionId;
-      this.connection = hubConnection; 
-      hubConnection.on("UserConnected",(users) => console.log(users));  
-      hubConnection.on(categoryId, (all) => {
+      this.connectionMessage = hubConnection; 
+      this.connectionMessage.on(this.$route.params.categoryId, (all) => 
+      {
         all = JSON.parse(all);
-        console.log(all);
-         console.log(all.onlineUserModels);
-         console.log(all.messageModels); 
          this.userMessage = {
            id: all.Id,
            text: all.Text,
@@ -147,10 +153,40 @@ export default {
         console.log(this.userMessages);
       });
     },
-    
+   async userConnected()
+    {     
+      const hubConnectionUser = await new signalR.HubConnectionBuilder()
+        .configureLogging(signalR.LogLevel.Debug)
+        .withUrl("http://localhost:7002/UserHub", {
+          skipNegotiation: true,
+          transport: signalR.HttpTransportType.WebSockets,
+        })
+        .build();
+        this.connectionUser = hubConnectionUser;
+        this.connectionUser.start(); 
+        this.connectionUser.on("UserConnected",user => {
+        user = JSON.parse(user);
+        this.onlineUsers = user;
+        // if(user.UserConnection === "online" )
+        // {
+        //     //this.$store.commit("OnlineUser",user.UserName);
+        // }
+        // else if(user.UserConnection === "offline")
+        // {
+        //   //this.$store.commit("OfflineUser",user.UserName);
+        // }
+        console.log(this.onlineUsers);
+        }
+      );
+    },
   },
  beforeMount() {
-    this.CheckUser();    
+    var catId = this.$route.params.categoryId;
+    var catName =this.$route.params.categoryName;
+    console.log(catId);
+    console.log(catName);
+    this.getAll(catId,catName);
+    this.userConnected();  
   }, 
 };
 </script>

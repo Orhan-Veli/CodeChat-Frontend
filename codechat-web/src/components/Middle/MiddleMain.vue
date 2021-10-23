@@ -1,7 +1,7 @@
 <template>
   <aside class="tengah-side">
     <div class="chat-room-head">
-      <h3>Chat Room {{ this.$store.state.name }}</h3>
+      <h3>Chat Room {{ this.$route.params.categoryName }}</h3>
     </div>
     <div class="scroll">
       <UserMessage :messages="messages" />
