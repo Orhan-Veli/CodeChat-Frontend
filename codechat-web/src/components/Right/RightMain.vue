@@ -1,8 +1,10 @@
 <template>
      <aside class="kanan-side">
             <div class="user-head">
-             <Donate />
-              <Option />
+             <span><Donate /></span>
+              <span><Option /></span>
+              <span><Admin /></span>
+              <span><Logout /></span>
             </div>
             <div class="invite-row">
               <h4 class="pull-left">Online Coders</h4>
@@ -19,10 +21,12 @@
 import User from './User.vue'
 import Option from './Option.vue'
 import Donate from './Donate.vue'
+import Admin from './Admin.vue'
+import Logout from './Logout.vue'
 export default {
     name:'RightMain',
     components:{
-        User,Option,Donate
+        User,Option,Donate,Admin,Logout
     },
     props:["users"]
 }
