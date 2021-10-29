@@ -87,8 +87,8 @@ export default {
       }
       return null;
     },
-    async getAll(val) {  
-      this.CheckUser(val);  
+    async getAll(val) { 
+      this.CheckUser(val); 
       this.messages = [];
       if (val === undefined) {
         return;

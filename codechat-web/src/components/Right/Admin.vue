@@ -51,7 +51,7 @@ export default {
         },
         async AdminPage()
         {
-           console.log(this.$cookies.get("CodeChatCookie"));
+           this.$router.push("/Admin");
         },
     }
 }

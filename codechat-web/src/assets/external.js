@@ -10,6 +10,7 @@ function Jquery_script() {
     document.head.appendChild(script)
 }
 
+
 function Popper_script() {
     let src = "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js";
     if(document.querySelector("script[src='" + src + "']")){ return; }
@@ -65,6 +66,9 @@ function del_link(href) {
     let el = document.querySelector("link[href='" + href + "']");
     if(el){ el.remove(); }
 }
+
+
+
 
 export {
     Jquery_script,
