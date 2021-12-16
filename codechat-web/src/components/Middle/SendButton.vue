@@ -42,7 +42,7 @@ export default {
         }),
         mode: "cors",
       };
-      await fetch("http://localhost:7002/api/message", requestOptions)
+      await fetch("http://localhost:7007/message/createmessage", requestOptions)
         .then((response) => console.log(response))
         .catch((error) => console.log(error));
       this.$refs["messageText"].value = "";

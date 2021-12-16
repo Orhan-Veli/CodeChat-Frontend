@@ -32,13 +32,18 @@
                         <a 
                             class="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                             <i class="fas fa-table float-left mx-2"></i>
-                            Tables
+                            ReportedUsers
                             <span><i class="fa fa-angle-right float-right"></i></span>
                         </a>
                     </li>
-                   
-                   
-                   
+                    <li class="w-full h-full py-3 px-2 border-b border-light-border bg-white">
+                        <a type="button" href="" @click="UsersTable()"
+                            class="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                            <i class="fas fa-table float-left mx-2"></i>
+                            Users
+                            <span><i class="fa fa-angle-right float-right"></i></span>
+                        </a>
+                    </li>
                 </ul>
 
             </aside>
@@ -65,8 +70,7 @@
                                       </tr>
                                     </thead>
                                     <tbody>
-                                        
-                                        <tr :key="message.id" v-for="message in reportedMessages">
+                                         <tr :key="message.id" v-for="message in reportedMessages">
                                             <td class="border px-4 py-2">{{message.id}}</td>
                                             <td class="border px-4 py-2">{{message.userName}}</td>
                                             <td class="border px-4 py-2">{{message.text}}</td>
@@ -78,7 +82,7 @@
                                                 <a  class="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-white">
                                                         <i class="fas fa-eye"></i></a>
                                                 <a type="button" @click="BanUser(message.userId)" class="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-white">
-                                                        <i class="fas fa-edit"></i></a>
+                                                        <i class="fas fa-ban"></i></a>
                                                 <a type="button" @click="DeleteMessage(message.id)" class="bg-teal-300 cursor-pointer rounded p-1 mx-1 text-red-500">
                                                         <i class="fas fa-trash"></i>
                                                 </a>
@@ -108,7 +112,7 @@
 <script>
 export default
 {
-    name:'Table',
+    name:'ReportedUsersTable',
     data()
     {
         return{
@@ -120,6 +124,10 @@ export default
         Admin()
         {
             this.$router.push("/Admin");
+        },
+        UsersTable()
+        {
+            this.$router.push("/UsersTable");
         },
         getCookie(name) {
         var nameEQ = name + "=";
@@ -135,32 +143,38 @@ export default
         },
         async GetReportedUser()
         {
-             this.reportedMessages = [];
+            const cookie = this.getCookie("CodeChatCookie");
+            this.reportedMessages = [];
             const requestOptions = {
             method: "GET",
             headers: {
             "Content-Type": "application/json",
+            "Authorization": "Bearer " + cookie,
             },
             mode: "cors",
         };
-            await fetch("http://localhost:7002/api/message/getallreportedmessages",requestOptions)
+            await fetch("http://localhost:7007/message/getallreportedmessages",requestOptions)
             .then(response => response.json())
             .then(data => this.reportedMessages = data)
             .catch(error => console.log(error))
             console.log(this.reportedMessages);
         },
-        async DeleteMessage(messageId)
+         async DeleteMessage(messageId)
         {
+            const cookie = this.getCookie("CodeChatCookie");
             if(messageId == null)
             {
                 return;
             }
             const requestOptions = {
                 method:"DELETE",
-                headers:{"Content-type":"application/json"},
+                headers:{
+                    "Content-type":"application/json",
+                    "Authorization": "Bearer " + cookie,
+                    },
                 mode:"cors"
             }
-            await fetch(`http://localhost:7002/api/message/${messageId}`,requestOptions)
+            await fetch(`http://localhost:7007/message/${messageId}`,requestOptions)
             .then(response => {
                 if(response.status == 200)
                 {
@@ -171,16 +185,20 @@ export default
         },
         async BanUser(userId)
         {
+            const cookie = this.getCookie("CodeChatCookie");
             if(userId == null)
             {
                 return;
             }
             const requestOptions = {
                 method: "PUT",
-                headers: {"Content-type":"application/json"},
+                headers: {
+                    "Content-type":"application/json",
+                    "Authorization": "Bearer " + cookie,
+                    },
                 mode:"cors"
             }
-            await fetch(`http://localhost:7001/api/user/${userId}`,requestOptions)
+            await fetch(`http://localhost:7007/user/${userId}`,requestOptions)
             .then(response => {
                 if(response.status == 200)
                 {
@@ -205,7 +223,7 @@ export default
     },
     mode: "cors",
     };
-    await fetch("http://localhost:7001/api/user/getuserrole", requestOptions)
+    await fetch("http://localhost:7007/user/getuserrole", requestOptions)
     .then((response) => response = response.text())
     .then(json => {
         if(json != "Admin")

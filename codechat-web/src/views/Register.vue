@@ -118,7 +118,7 @@ export default {
         }),
         mode: "cors",
       };
-      await fetch("http://localhost:7001/api/User/Sign", requestOptions)
+      await fetch("http://localhost:7007/User/sign", requestOptions)
         .then((response) => {
           if (response.ok) {
             this.$router.push("/");

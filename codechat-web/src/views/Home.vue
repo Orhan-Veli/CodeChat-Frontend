@@ -48,9 +48,6 @@ export default {
       onlineUsers:[], 
     };
   },
-  // computed:{
-  //   ...mapState(["onlineUsers"])
-  // },
   methods: {
     //...mapMutations(["OnlineUser","OfflineUser"]),
      async CheckUser(catId,catName) {
@@ -66,7 +63,7 @@ export default {
           mode: "cors",
         };
         await fetch(
-          "http://localhost:7001/api/user/CheckUser",
+          "http://localhost:7007/user/checkuser",
           requestOptions
         )
           .then((res) => res.ok ? this.$router.push({name:"Home",params:{categoryId:catId,categoryName:catName}}) : this.$router.push("/"))
@@ -88,6 +85,7 @@ export default {
       return null;
     },
     async getAll(val) { 
+      const cookie = this.getCookie("CodeChatCookie");
       this.CheckUser(val); 
       this.messages = [];
       if (val === undefined) {
@@ -97,6 +95,7 @@ export default {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": "Bearer " + cookie,
         },
         mode: "cors",
       };
@@ -150,12 +149,12 @@ export default {
            createdOn: all.CreatedOn,
           };          
         this.messages.push(this.userMessage);
-        console.log(this.userMessages);
+        console.log(this.userMessages);         
       });
     },
-   async userConnected()
+   userConnected()
     {     
-      const hubConnectionUser = await new signalR.HubConnectionBuilder()
+      const hubConnectionUser = new signalR.HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
         .withUrl("http://localhost:7002/UserHub", {
           skipNegotiation: true,
@@ -167,14 +166,6 @@ export default {
         this.connectionUser.on("UserConnected",user => {
         user = JSON.parse(user);
         this.onlineUsers = user;
-        // if(user.UserConnection === "online" )
-        // {
-        //     //this.$store.commit("OnlineUser",user.UserName);
-        // }
-        // else if(user.UserConnection === "offline")
-        // {
-        //   //this.$store.commit("OfflineUser",user.UserName);
-        // }
         console.log(this.onlineUsers);
         }
       );

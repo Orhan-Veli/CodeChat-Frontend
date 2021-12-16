@@ -105,7 +105,7 @@ export default {
           mode: "cors",
         };
         await fetch(
-          "http://localhost:7001/api/user/CheckUser",
+          "http://localhost:7007/user/checkuser",
           requestOptions
         )
           .then((res) => {if(res.ok){ this.$router.push({name:"Home",params:{categoryId:'48b04268-ce54-4ca4-9446-ce367b58be9f',categoryName:'orhan'}})}})
@@ -135,7 +135,7 @@ export default {
         }),
         mode: "cors",
       };
-       await fetch("http://localhost:7001/api/User/Login", requestOptions).then(async (response) => {
+       await fetch("http://localhost:7007/User/login", requestOptions).then(async (response) => {
           if(response.status == 200)
           {
             let data = await response.json();

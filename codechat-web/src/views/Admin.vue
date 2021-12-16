@@ -7,8 +7,10 @@
         <header class="bg-nav">
             <div class="flex justify-between">
                 <div class="p-1 mx-3 inline-flex items-center">
-                    <h1 class="text-white p-2">CodeChat-Admin</h1>
-                </div>
+                    <a type="button" @click="ReturnHome()" href="#">
+                        <h1 class="text-white p-2">CodeChat-Admin</h1>
+                    </a>                  
+                </div>               
             </div>
         </header>
         <!--/Header-->
@@ -30,7 +32,15 @@
                         <a type="button" href="" @click="Table()"
                            class="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                             <i class="fas fa-table float-left mx-2"></i>
-                            Tables
+                            ReportedUsers
+                            <span><i class="fa fa-angle-right float-right"></i></span>
+                        </a>
+                    </li>
+                      <li class="w-full h-full py-3 px-2 border-b border-light-border bg-white">
+                        <a type="button" href="" @click="UsersTable()"
+                            class="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                            <i class="fas fa-table float-left mx-2"></i>
+                            Users
                             <span><i class="fa fa-angle-right float-right"></i></span>
                         </a>
                     </li>                                                   
@@ -47,10 +57,10 @@
                         <div class="shadow-lg bg-red-vibrant border-l-8 hover:bg-red-vibrant-dark border-red-vibrant-dark mb-2 p-2 md:w-1/4 mx-2">
                             <div class="p-4 flex flex-col">
                                 <a href="#" class="no-underline text-white text-2xl">
-                                    $244
+                                    {{totalUser}}
                                 </a>
                                 <a href="#" class="no-underline text-white text-lg">
-                                    Total Sales
+                                    Total User
                                 </a>
                             </div>
                         </div>
@@ -58,10 +68,10 @@
                         <div class="shadow bg-info border-l-8 hover:bg-info-dark border-info-dark mb-2 p-2 md:w-1/4 mx-2">
                             <div class="p-4 flex flex-col">
                                 <a href="#" class="no-underline text-white text-2xl">
-                                    $199.4
+                                    {{totalReportedUser}}
                                 </a>
                                 <a href="#" class="no-underline text-white text-lg">
-                                    Total Cost
+                                    Reported Users
                                 </a>
                             </div>
                         </div>
@@ -194,12 +204,22 @@
 <script>
 export default{
     name:'Admin',
+    data(){
+        return{
+            totalUser:0,
+            totalReportedUser:0
+        }
+    },
     methods:
     {
         Table()
         {
-            this.$router.push("/Table");
-        },    
+            this.$router.push("/ReportedUsersTable");
+        }, 
+        UsersTable()
+        {
+            this.$router.push("/UsersTable");
+        },   
         getCookie(name) {
         var nameEQ = name + "=";
         var ca = document.cookie.split(";");
@@ -212,6 +232,47 @@ export default{
         }
         return null;
         },
+        ReturnHome()
+        {
+            this.$router.push({name:"Home",params:{categoryId:'48b04268-ce54-4ca4-9446-ce367b58be9f',categoryName:'orhan'}});
+        },
+        async Users()
+        {
+            this.totalUser=undefined;
+            const cookie = this.getCookie("CodeChatCookie");
+            this.users = [];
+            const requestOptions = {
+            method: "GET",
+            headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + cookie,
+            },
+            mode: "cors",
+        };
+            await fetch("http://localhost:7007/user/getalluser",requestOptions)
+            .then(response => response.json())
+            .then(data => this.totalUser = data.data.length)
+            .catch(error => console.log(error))
+            console.log(this.totalUser);
+        },
+        async GetReportedUser()
+        {
+            const cookie = this.getCookie("CodeChatCookie");
+            this.totalReportedUser = 0;
+            const requestOptions = {
+            method: "GET",
+            headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + cookie,
+            },
+            mode: "cors",
+        };
+            await fetch("http://localhost:7007/message/getallreportedmessages",requestOptions)
+            .then(response => response.json())
+            .then(data => this.totalReportedUser = data.length)
+            .catch(error => console.log(error))
+            console.log(this.totalReportedUser);
+        },
     },
     async created()
     {
@@ -221,20 +282,22 @@ export default{
         this.$router.push("/");
     }
     const requestOptions = {
-    method: "POST",
+    method: "GET",
     headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + cookie,
     },
     mode: "cors",
     };
-    await fetch("http://localhost:7001/api/user/getuserrole", requestOptions)
+    await fetch("http://localhost:7007/user/getuserrole", requestOptions)
     .then((response) => response = response.text())
     .then(json => {
         if(json != "Admin")
         {
             this.$router.push("/");
         }
+        this.Users();
+        this.GetReportedUser();
     })
     .catch((error) => {
         console.error("Error:", error);

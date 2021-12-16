@@ -1,8 +1,7 @@
 <template>
 <div v-if="userRole == 'Admin'">
-<button @click="AdminPage">admin</button>
-<a>   
-    <fa :icon="['fas','fa-user-secret']" class="icon alt"/>
+<a type="button" href="#" @click="AdminPage">   
+    <i class="fa fa-user-secret" style="color:white;"></i>
 </a>
 </div>
 </template>
@@ -27,7 +26,7 @@ export default {
     },
     mode: "cors",
     };
-    await fetch("http://localhost:7001/api/user/getuserrole", requestOptions)
+    await fetch("http://localhost:7007/user/getuserrole", requestOptions)
     .then((response) => response = response.text())
     .then(json => this.userRole = json)
     .catch((error) => {

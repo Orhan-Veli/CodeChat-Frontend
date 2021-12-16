@@ -1,7 +1,7 @@
 <template>
   <div :key="message.id" v-for="message in messages">
     <div class="group-rom">
-      <div class="first-part">{{ message.userName }} <a type="button" href="#" @click="ReportUser(message.id)" class="fas fa-ban"></a> 
+      <div class="first-part">{{ message.userName }} <a type="button" href="#" @click="ReportUser(message.id)"><i class="fa fa-ban"></i></a> 
        
       </div>
       <div class="second-part">{{ message.text }}</div>
@@ -33,13 +33,18 @@ export default {
     },
     async ReportUser(id)
     {
+      const cookie = this.getCookie("CodeChatCookie");
       const requestOptions =
       {
         method:"POST",
-        headers: { "Content-Type":"application/json"},
+        headers: 
+        { 
+          "Content-Type":"application/json",
+          "Authorization": "Bearer " + cookie, 
+        },
         body:JSON.stringify({MessageId:id,UserId:this.userId})
       };
-      await fetch("http://localhost:7002/api/message/reportmessage",requestOptions)
+      await fetch("http://localhost:7007/message/reportmessage",requestOptions)
       .then(response => {
         response.json()
         this.$toast.warning("User reported.",{
@@ -53,11 +58,11 @@ export default {
       })
     },
     async GetUserId() {
-      let cookie = this.getCookie("CodeChatCookie");
+      const cookie = this.getCookie("CodeChatCookie");
       console.log(cookie);
       if (cookie !== null) {
         const requestOptions = {
-          method: "POST",
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + cookie,
@@ -65,7 +70,7 @@ export default {
           mode: "cors",
         };
         await fetch(
-          "http://localhost:7001/api/user/getuserid",
+          "http://localhost:7007/user/getuserid",
           requestOptions
         )
           .then(async (res) => res=res.text())

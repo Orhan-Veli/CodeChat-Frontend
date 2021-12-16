@@ -1,6 +1,10 @@
 <template>
-<button @click="Logout">logout</button>
-<fa :icon="['fas','fa-sign-out-alt']" />
+<div>
+<a type="button" href="#" @click="Logout()">
+<i class="fa fa-sign-out" style="color:white;"></i>
+</a>
+</div>
+
 </template>
 
 <script>
@@ -12,7 +16,7 @@ export default {
         const requestOptions={
             method:"POST",
         }
-        await fetch("http://localhost:7001/api/user/logout", requestOptions)
+        await fetch("http://localhost:7007/user/logout", requestOptions)
         .then((response) => {
             if(response)
             {

@@ -1,8 +1,8 @@
 <template>
      <aside class="kanan-side">
             <div class="user-head">
-             <span><Donate /></span>
-              <span><Option /></span>
+             <!-- <span><Donate /></span>
+              <span><Option /></span> -->
               <span><Admin /></span>
               <span><Logout /></span>
             </div>
@@ -19,14 +19,14 @@
 
 <script>
 import User from './User.vue'
-import Option from './Option.vue'
-import Donate from './Donate.vue'
+//import Option from './Option.vue'
+//import Donate from './Donate.vue'
 import Admin from './Admin.vue'
 import Logout from './Logout.vue'
 export default {
     name:'RightMain',
     components:{
-        User,Option,Donate,Admin,Logout
+        User,Admin,Logout
     },
     props:["users"]
 }
