@@ -13,7 +13,7 @@
 
 <script>
 import moment from "moment";
-
+import {GetUserId,ReportUser} from '@/assets/Js/Middle/UserMessage'
 export default {
   name: "UserMessage",
   props: ["messages"],
@@ -31,69 +31,15 @@ export default {
         return this.dates;
       }
     },
-    async ReportUser(id)
+    ReportUser(id)
     {
-      const cookie = this.getCookie("CodeChatCookie");
-      const requestOptions =
-      {
-        method:"POST",
-        headers: 
-        { 
-          "Content-Type":"application/json",
-          "Authorization": "Bearer " + cookie, 
-        },
-        body:JSON.stringify({MessageId:id,UserId:this.userId})
-      };
-      await fetch("http://localhost:7007/message/reportmessage",requestOptions)
-      .then(response => {
-        response.json()
-        this.$toast.warning("User reported.",{
-              position:"top-left", 
-              duration:1000,
-              dismissible:true,              
-            });
-        })
-      .catch(error => {
-        console.log(error);
-      })
-    },
-    async GetUserId() {
-      const cookie = this.getCookie("CodeChatCookie");
-      console.log(cookie);
-      if (cookie !== null) {
-        const requestOptions = {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + cookie,
-          },
-          mode: "cors",
-        };
-        await fetch(
-          "http://localhost:7007/user/getuserid",
-          requestOptions
-        )
-          .then(async (res) => res=res.text())
-          .then(data => this.userId = data)
-          .catch((error) => console.log(error));
-      } 
-    },
-    getCookie(name) {
-      var nameEQ = name + "=";
-      var ca = document.cookie.split(";");
-      for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == " ") c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) == 0) {
-          return c.substring(nameEQ.length, c.length);
-        }
-      }
-      return null;
-    },
+      ReportUser(id,this.userId)
+    }
+    
   },
   beforeMount()
   {
-    this.GetUserId();
+    this.userId = GetUserId()
   }
 };
 </script>

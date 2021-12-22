@@ -57,7 +57,7 @@
                   </div>
                   <div class="form-group m-0">
                     <button
-                      @click="LoginUser()"
+                      @click="LoginUser(Emailaddress,Password)"
                       class="btn btn-primary btn-block"
                     >
                       Login
@@ -81,8 +81,8 @@
   <router-view></router-view>
 </template>
 <script>
+import {CheckUser,LoginUser} from '@/assets/Js/View/Login.js'
 import * as external from "@/assets/external.js";
-import VCookies from "vue-cookies";
 export default {
   name: "Login",
   data() {
@@ -92,74 +92,14 @@ export default {
     };
   },
   methods: {
-    async CheckUser() {
-      let cookie = this.getCookie("CodeChatCookie");
-      console.log(cookie);
-      if (cookie !== null) {
-        const requestOptions = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + cookie,
-          },
-          mode: "cors",
-        };
-        await fetch(
-          "http://localhost:7007/user/checkuser",
-          requestOptions
-        )
-          .then((res) => {if(res.ok){ this.$router.push({name:"Home",params:{categoryId:'48b04268-ce54-4ca4-9446-ce367b58be9f',categoryName:'orhan'}})}})
-          .catch((error) => console.log(error));
-      } 
-    },
-    getCookie(name) {
-      var nameEQ = name + "=";
-      var ca = document.cookie.split(";");
-      for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == " ") c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) == 0) {
-          return c.substring(nameEQ.length, c.length);
-        }
-      }
-      return null;
-    },
-
-    async LoginUser() {
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json",'Accept': 'application/json' },
-        body: JSON.stringify({
-          Email: this.Emailaddress,
-          Password: this.Password,
-        }),
-        mode: "cors",
-      };
-       await fetch("http://localhost:7007/User/login", requestOptions).then(async (response) => {
-          if(response.status == 200)
-          {
-            let data = await response.json();
-            console.log(data);
-            VCookies.set("CodeChatCookie", data, "3h", "/");
-            this.$router.push({name:"Home",params:{categoryId:'48b04268-ce54-4ca4-9446-ce367b58be9f',categoryName:'orhan'}});
-          }
-          else
-          {                   
-            this.$toast.warning("Username or password is not correct.",{
-              position:"top-right",
-              duration:1000,
-              dismissible:true,              
-            });
-          } 
-       });
-       
-       
-               
-    },
+    LoginUser(email,password)
+    {
+      LoginUser(email,password)
+    }
   },
   beforeMount()
   {
-    this.CheckUser();
+    CheckUser()
   },
   mounted() {
     external.Jquery_script();

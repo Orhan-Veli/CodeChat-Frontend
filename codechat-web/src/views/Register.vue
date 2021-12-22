@@ -73,7 +73,7 @@
 
                   <div class="form-group m-0">
                     <button
-                      @click="RegisterUser()"
+                      @click="RegisterUser(UserName,Email,Password)"
                       class="btn btn-primary btn-block"
                     >
                       Register
@@ -96,6 +96,7 @@
 </template>
 
 <script>
+import {RegisterUser} from '@/assets/Js/View/Register'
 import * as external from "@/assets/external.js";
 export default {
   name: "Register",
@@ -107,33 +108,10 @@ export default {
     };
   },
   methods: {
-    async RegisterUser() {
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          UserName: this.UserName,
-          Email: this.Email,
-          Password: this.Password,
-        }),
-        mode: "cors",
-      };
-      await fetch("http://localhost:7007/User/sign", requestOptions)
-        .then((response) => {
-          if (response.ok) {
-            this.$router.push("/");
-          }
-          else
-          {
-             this.$toast.warning("Username or email is already taken.",{
-              position:"top-right",
-              duration:1000,
-              dismissible:true,              
-            });
-          }
-        })
-        .catch((error) => console.log("error: ", error));
-    },
+    RegisterUser(userName,email,password)
+    {
+      RegisterUser(userName,email,password)
+    }
   },
   mounted() {
     external.Jquery_script();

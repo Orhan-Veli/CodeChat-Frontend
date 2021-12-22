@@ -202,6 +202,7 @@
 </template>
 
 <script>
+import {GetUserRole, GetUsers,GetReportedUser} from '@/assets/Js/View/Admin'
 export default{
     name:'Admin',
     data(){
@@ -220,90 +221,16 @@ export default{
         {
             this.$router.push("/UsersTable");
         },   
-        getCookie(name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(";");
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == " ") c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) == 0) {
-            return c.substring(nameEQ.length, c.length);
-            }
-        }
-        return null;
-        },
         ReturnHome()
         {
             this.$router.push({name:"Home",params:{categoryId:'48b04268-ce54-4ca4-9446-ce367b58be9f',categoryName:'orhan'}});
         },
-        async Users()
-        {
-            this.totalUser=undefined;
-            const cookie = this.getCookie("CodeChatCookie");
-            this.users = [];
-            const requestOptions = {
-            method: "GET",
-            headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + cookie,
-            },
-            mode: "cors",
-        };
-            await fetch("http://localhost:7007/user/getalluser",requestOptions)
-            .then(response => response.json())
-            .then(data => this.totalUser = data.data.length)
-            .catch(error => console.log(error))
-            console.log(this.totalUser);
-        },
-        async GetReportedUser()
-        {
-            const cookie = this.getCookie("CodeChatCookie");
-            this.totalReportedUser = 0;
-            const requestOptions = {
-            method: "GET",
-            headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + cookie,
-            },
-            mode: "cors",
-        };
-            await fetch("http://localhost:7007/message/getallreportedmessages",requestOptions)
-            .then(response => response.json())
-            .then(data => this.totalReportedUser = data.length)
-            .catch(error => console.log(error))
-            console.log(this.totalReportedUser);
-        },
     },
     async created()
     {
-    const cookie = this.getCookie("CodeChatCookie");
-    if(cookie == null)
-    {
-        this.$router.push("/");
-    }
-    const requestOptions = {
-    method: "GET",
-    headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + cookie,
-    },
-    mode: "cors",
-    };
-    await fetch("http://localhost:7007/user/getuserrole", requestOptions)
-    .then((response) => response = response.text())
-    .then(json => {
-        if(json != "Admin")
-        {
-            this.$router.push("/");
-        }
-        this.Users();
-        this.GetReportedUser();
-    })
-    .catch((error) => {
-        console.error("Error:", error);
-        this.$router.push("/");
-      });
-    console.log(this.userRole);
+        await GetUserRole();
+        this.totalUser = await GetUsers();
+        this.totalReportedUser = await GetReportedUser();
     },
 
 }

@@ -110,6 +110,7 @@
 </template>
 
 <script>
+import {GetUserRole,BanUser,DeleteMessage} from '@/assets/Js/View/ReportedUsersTable'
 export default
 {
     name:'ReportedUsersTable',
@@ -129,114 +130,19 @@ export default
         {
             this.$router.push("/UsersTable");
         },
-        getCookie(name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(";");
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == " ") c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) == 0) {
-            return c.substring(nameEQ.length, c.length);
-            }
+        BanUser(userId)
+        {
+            BanUser(userId)
+        },
+        DeleteMessage(messageId)
+        {
+            DeleteMessage(messageId)
         }
-        return null;
-        },
-        async GetReportedUser()
-        {
-            const cookie = this.getCookie("CodeChatCookie");
-            this.reportedMessages = [];
-            const requestOptions = {
-            method: "GET",
-            headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + cookie,
-            },
-            mode: "cors",
-        };
-            await fetch("http://localhost:7007/message/getallreportedmessages",requestOptions)
-            .then(response => response.json())
-            .then(data => this.reportedMessages = data)
-            .catch(error => console.log(error))
-            console.log(this.reportedMessages);
-        },
-         async DeleteMessage(messageId)
-        {
-            const cookie = this.getCookie("CodeChatCookie");
-            if(messageId == null)
-            {
-                return;
-            }
-            const requestOptions = {
-                method:"DELETE",
-                headers:{
-                    "Content-type":"application/json",
-                    "Authorization": "Bearer " + cookie,
-                    },
-                mode:"cors"
-            }
-            await fetch(`http://localhost:7007/message/${messageId}`,requestOptions)
-            .then(response => {
-                if(response.status == 200)
-                {
-                    location.reload();
-                }               
-                })
-            .catch(error => console.log(error))
-        },
-        async BanUser(userId)
-        {
-            const cookie = this.getCookie("CodeChatCookie");
-            if(userId == null)
-            {
-                return;
-            }
-            const requestOptions = {
-                method: "PUT",
-                headers: {
-                    "Content-type":"application/json",
-                    "Authorization": "Bearer " + cookie,
-                    },
-                mode:"cors"
-            }
-            await fetch(`http://localhost:7007/user/${userId}`,requestOptions)
-            .then(response => {
-                if(response.status == 200)
-                {
-                    location.reload();
-                }  
-                })
-            .catch(error => console.log(error))
-        }
+        
     },
     async created()
     {
-    const cookie = this.getCookie("CodeChatCookie");
-    if(cookie == null)
-    {
-        this.$router.push("/");
-    }
-    const requestOptions = {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + cookie,
-    },
-    mode: "cors",
-    };
-    await fetch("http://localhost:7007/user/getuserrole", requestOptions)
-    .then((response) => response = response.text())
-    .then(json => {
-        if(json != "Admin")
-        {
-            this.$router.push("/");
-        }
-        this.GetReportedUser();       
-    })
-    .catch((error) => {
-        console.error("Error:", error);
-        this.$router.push("/");
-      });
-    console.log(this.userRole);
+        this.reportedMessages = GetUserRole();
     },
 
 }

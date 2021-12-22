@@ -25,12 +25,11 @@
 </template>
 
 <script>
-// import {mapMutations} from "vuex";
-// import {mapState} from "vuex";
-import * as signalR from "@microsoft/signalr";
+import { GetCookie,CheckUser } from "../assets/Js/View/Core";
 import LeftMain from "../components/Left/LeftMain.vue";
 import MiddleMain from "../components/Middle/MiddleMain.vue";
 import RightMain from "../components/Right/RightMain.vue";
+import * as signalR from "@microsoft/signalr";
 export default {
   name: "Home",
   components: {
@@ -40,144 +39,102 @@ export default {
   },
   data() {
     return {
-      messages: undefined,
-      connectionId: undefined,
-      userMessage: {},
-      connectionMessage: undefined,
-      connectionUser:undefined,
+      messages: [],  
       onlineUsers:[], 
     };
   },
-  methods: {
-    //...mapMutations(["OnlineUser","OfflineUser"]),
-     async CheckUser(catId,catName) {
-      let cookie = this.getCookie("CodeChatCookie");
-      console.log(cookie);
-      if (cookie !== null) {
-        const requestOptions = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + cookie,
-          },
-          mode: "cors",
-        };
-        await fetch(
-          "http://localhost:7007/user/checkuser",
-          requestOptions
-        )
-          .then((res) => res.ok ? this.$router.push({name:"Home",params:{categoryId:catId,categoryName:catName}}) : this.$router.push("/"))
-          .catch((error) => console.log(error));
-      } else {
-        this.$router.push("/");        
-      }
+  methods:{
+async GetAllMessage(catId,catName)
+{
+    const cookie = GetCookie("CodeChatCookie");
+    CheckUser(catId,catName); 
+    if (catId === undefined) {
+    return;
+    }
+    const requestOptions = {
+    method: "GET",
+    headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + cookie,
     },
-    getCookie(name) {
-      var nameEQ = name + "=";
-      var ca = document.cookie.split(";");
-      for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == " ") c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) == 0) {
-          return c.substring(nameEQ.length, c.length);
-        }
-      }
-      return null;
-    },
-    async getAll(val) { 
-      const cookie = this.getCookie("CodeChatCookie");
-      this.CheckUser(val); 
-      this.messages = [];
-      if (val === undefined) {
-        return;
-      }
-      const requestOptions = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + cookie,
-        },
-        mode: "cors",
-      };
-      await fetch(
-        `http://localhost:7002/api/message/getall/${val}`,
-        requestOptions
-      )
-        .then((response) => response.json())
-        .then((data) => 
+    mode: "cors",
+    };
+    await fetch(
+    `http://localhost:7007/message/getall/${catId}`,
+    requestOptions
+    )
+    .then((response) => response.json())
+    .then((data) => 
+    {
+        if(data)
         {
-          if(data)
-          {
-            this.messages = data.data; 
-            console.log(this.messages);                
-          }         
-        })
-        .catch((error) => {
-          this.messages = [];
-          console.error("Error:", error);
-        });    
-       
-      await this.signalRSocket(val);
-      console.log(val);
-    },
-    async signalRSocket(categoryId) {       
-      if (categoryId === undefined) {
-        return;
-      }
-      if (this.connection !== undefined) {
-        console.log("con stop");
-        await this.connection.stop();
-      }      
-      const hubConnection = new signalR.HubConnectionBuilder()
-        .configureLogging(signalR.LogLevel.Debug)
-        .withUrl("http://localhost:7002/ChatHub", {
-          skipNegotiation: true,
-          transport: signalR.HttpTransportType.WebSockets,
-        })
-        .build();
-      hubConnection.start();
-      this.connectionMessage = hubConnection; 
-      this.connectionMessage.on(this.$route.params.categoryId, (all) => 
+        this.messages = data.data; 
+        console.log(this.messages);                
+        }         
+    })
+    .catch((error) => {
+        this.messages = [];
+        console.error("Error:", error);
+    });    
+    
+    await this.SignalRSocket(catId);
+    console.log(catId); 
+},
+SignalRSocket(categoryId)
+{       
+  
+    if (categoryId === undefined) {
+      return;
+    }   
+    const hubConnection = new signalR.HubConnectionBuilder()
+      .configureLogging(signalR.LogLevel.Debug)
+      .withUrl("http://localhost:7002/ChatHub", {
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets,
+      })
+      .build();
+    hubConnection.start();
+    let connectionMessage = hubConnection; 
+    connectionMessage.on(categoryId, (all) => 
+    {
+      all = JSON.parse(all);
+      var userMessage = {
+         id: all.Id,
+         text: all.Text,
+         userId:all.UserId,
+         userName:all.UserName,
+         categoryName: all.CategoryName,
+         createdOn: all.CreatedOn,
+        };          
+        this.messages.push(userMessage);
+      console.log(this.messages);         
+    });
+},
+
+  UserConnected()
       {
-        all = JSON.parse(all);
-         this.userMessage = {
-           id: all.Id,
-           text: all.Text,
-           userId:all.UserId,
-           userName:all.UserName,
-           categoryName: all.CategoryName,
-           createdOn: all.CreatedOn,
-          };          
-        this.messages.push(this.userMessage);
-        console.log(this.userMessages);         
-      });
-    },
-   userConnected()
-    {     
-      const hubConnectionUser = new signalR.HubConnectionBuilder()
+        const hubConnectionUser = new signalR.HubConnectionBuilder()
         .configureLogging(signalR.LogLevel.Debug)
         .withUrl("http://localhost:7002/UserHub", {
           skipNegotiation: true,
           transport: signalR.HttpTransportType.WebSockets,
         })
         .build();
-        this.connectionUser = hubConnectionUser;
-        this.connectionUser.start(); 
-        this.connectionUser.on("UserConnected",user => {
-        user = JSON.parse(user);
-        this.onlineUsers = user;
-        console.log(this.onlineUsers);
-        }
-      );
-    },
+        let connectionUser = hubConnectionUser;
+        connectionUser.start(); 
+        connectionUser.on("UserConnected",user => {
+        this.onlineUsers = JSON.parse(user);   
+        console.log(this.onlineUsers);    
+        }    
+      );  
+    }
   },
- beforeMount() {
+async beforeMount() {  
     var catId = this.$route.params.categoryId;
-    var catName =this.$route.params.categoryName;
-    console.log(catId);
-    console.log(catName);
-    this.getAll(catId,catName);
-    this.userConnected();  
+    var catName =this.$route.params.categoryName; 
+    this.UserConnected();  
+    await this.GetAllMessage(catId,catName);    
+    document.getElementsByClassName('scroll')[0].scrollTop =  document.getElementsByClassName('scroll')[0].scrollHeight
   }, 
 };
 </script>

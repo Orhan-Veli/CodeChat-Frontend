@@ -123,6 +123,7 @@
 </template>
 
 <script>
+import {GetUserRole,UpdateUser,BanUser} from '@/assets/Js/View/UsersTable.js'
 export default
 {
     name:'UsersTable',
@@ -142,115 +143,18 @@ export default
         {
             this.$router.push("/ReportedUsersTable");
         }, 
-        getCookie(name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(";");
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == " ") c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) == 0) {
-            return c.substring(nameEQ.length, c.length);
-            }
-        }
-        return null;
-        },
-        async Users()
+        UpdateUser(userId,userRole)
         {
-            const cookie = this.getCookie("CodeChatCookie");
-            this.users = [];
-            const requestOptions = {
-            method: "GET",
-            headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + cookie,
-            },
-            mode: "cors",
-        };
-            await fetch("http://localhost:7007/user/getalluser",requestOptions)
-            .then(response => response.json())
-            .then(data => this.users = data.data)
-            .catch(error => console.log(error))
-            console.log(this.users);
+           UpdateUser(userId,userRole)
         },
-        async UpdateUser(id,userRole)
+        BanUser(userId)
         {
-            const cookie = this.getCookie("CodeChatCookie");
-            if(id == null || userRole == null)
-            {
-                return;
-            }
-            const requestOptions = {
-                method:"PUT",
-                headers:{
-                    "Content-type":"application/json",
-                    "Authorization": "Bearer " + cookie,
-                    },
-                body:JSON.stringify({UserId:id,UserRole:userRole}),
-                mode:"cors"
-            }
-            await fetch("http://localhost:7007/user/updateuserrole",requestOptions)
-            .then(response => {
-                if(response.status == 200)
-                {
-                    location.reload();
-                }               
-                })
-            .catch(error => console.log(error))
-        },
-        async BanUser(userId)
-        {
-            const cookie = this.getCookie("CodeChatCookie");
-            if(userId == null)
-            {
-                return;
-            }
-            const requestOptions = {
-                method: "PUT",
-                headers: {
-                    "Content-type":"application/json",
-                    "Authorization": "Bearer " + cookie,
-                    },
-                mode:"cors"
-            }
-            await fetch(`http://localhost:7007/user/${userId}`,requestOptions)
-            .then(response => {
-                if(response.status == 200)
-                {
-                    location.reload();
-                }  
-                })
-            .catch(error => console.log(error))
+            BanUser(userId)
         }
     },
     async created()
     {
-    const cookie = this.getCookie("CodeChatCookie");
-    if(cookie == null)
-    {
-        this.$router.push("/");
-    }
-    const requestOptions = {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + cookie,
-    },
-    mode: "cors",
-    };
-    await fetch("http://localhost:7007/user/getuserrole", requestOptions)
-    .then((response) => response = response.text())
-    .then(json => {
-        if(json != "Admin")
-        {
-            this.$router.push("/");
-        }
-        this.Users();       
-    })
-    .catch((error) => {
-        console.error("Error:", error);
-        //this.$router.push("/");
-      });
-    console.log(this.userRole);
+       this.users = await GetUserRole();
     },
 
 }

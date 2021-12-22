@@ -31,7 +31,7 @@ const routes = [
     name: 'Login',
     component: Login
   },
-  { path: '/Home/:categoryId/:categoryName',name:'Home',component: () => import('../views/Home.vue') },
+  { path: '/Home/:categoryName/:categoryId',name:'Home',component: () => import('../views/Home.vue') },
 ]
 
 const router = createRouter({
